@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fees - International Conference 2025</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Conference 2025</a>
+        </div>
+    </nav>
+    
+    <div class="container mt-5">
+        <section id="fees">
+            <h2>Registration Fees</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>International delegates</td>
+                        <td>USD 100</td>
+                    </tr>
+                    <tr>
+                        <td>National delegates/Scientist/Researcher</td>
+                        <td>INR 2000</td>
+                    </tr>
+                    <tr>
+                        <td>TA/RA/SRF/JRF</td>
+                        <td>INR 1000</td>
+                    </tr>
+                    <tr>
+                        <td>Students (PG/Ph.D)</td>
+                        <td>INR 750</td>
+                    </tr>
+                    <tr>
+                        <td>UG Students</td>
+                        <td>INR 500</td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Add a payment button -->
+            <button id="checkout-button" class="btn btn-primary">Pay Now</button>
+        </section>
+        
+        <section id="bank-details" class="mt-5">
+            <h2>Bank Details for Payment</h2>
+            <p><strong>Name:</strong> The Dean, AEC & RI, Kumulur</p>
+            <p><strong>Account No.:</strong> 1374010000000001</p>
+            <p><strong>IFSC Code:</strong> IOBA0001374</p>
+            <p><strong>MICR Code:</strong> 620020517</p>
+            <p><strong>Bank Name:</strong> Indian Overseas Bank, Poovalur</p>
+        </section>
+    </div>
+    
+    <!-- Include Razorpay's Checkout.js -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.getElementById('checkout-button').addEventListener('click', () => {
+            // Call the server to create an order
+            fetch('/create-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ amount: 2000 }), // Replace with the actual amount in INR
+            })
+            .then(response => response.json())
+            .then(order => {
+                // Initialize Razorpay with the order details
+                const options = {
+                    key: 'rzp_test_houeVDZKFPJhAi', // Replace with your Razorpay Key ID
+                    amount: order.amount, // Amount in paise
+                    currency: order.currency,
+                    name: 'Conference 2025',
+                    description: 'Registration Fee',
+                    image: 'https://your-logo-url.com/logo.png', // Optional, replace with your logo URL
+                    order_id: order.id, // Razorpay Order ID
+                    handler: function (response) {
+                        alert('Payment successful! Thank you for registering.');
+                        console.log(response); // Log payment response for debugging
+                    },
+                    prefill: {
+                        name: 'Your Name',
+                        email: 'your-email@example.com',
+                        contact: '9999999999',
+                    },
+                    theme: {
+                        color: '#3399cc',
+                    },
+                };
+
+                const rzp = new Razorpay(options);
+                rzp.open();
+            })
+            .catch(err => {
+                console.error('Error creating order:', err);
+                alert('Payment failed. Please try again.');
+            });
+        });
+    </script>
+</body>
+</html>
